@@ -1,0 +1,56 @@
+<!DOCTYPE html>  
+<html>
+
+  <head>
+  <meta charset="UTF-8">
+  <title>CCV.js臉部偵測測試</title>
+  <script type="text/javascript" src="ccv.js"></script>
+  <script type="text/javascript" src="face.js"></script>
+  <script type="text/javascript" src="jquery_1.5.2.min.js"></script>
+  </head>
+
+  <body>
+    <canvas id="canvas"  width="800px" height="550px"/>
+  </body>
+</html>
+
+<script>
+  //自訂偵測函數
+  fun_start();
+  
+  function fun_start(){
+    var image = new Image();
+    image.src = "002.jpg";
+    var canvas01 = $('#canvas').get(0);
+	//設定canvas為2d模式
+    var ctx = canvas01.getContext("2d");
+	//白色背景
+    ctx.fillStyle = 'rgb(255,255,255)';
+	//繪製方形
+    ctx.fillRect(0, 0, 800,500);
+    image.onload = function () {
+      //ccv偵測人臉函數
+      var face1 = ccv.detect_objects({ 
+	        "canvas" : ccv.grayscale(ccv.pre(image)),
+            "cascade" : cascade,
+            "interval" : 5,
+            "min_neighbors" : 1 });
+	 //繪製圖片
+     ctx.drawImage(image, 0, 0);
+	 //設定線條寬度
+     ctx.lineWidth = 2;
+	 //設定線條顏色
+     ctx.strokeStyle = "rgb(0,125,255)";
+     //將識別出來的人臉加上處理
+     for (var i = 0; i < face1.length; i++){
+	   //把人臉加上外框，外框一樣是以canvas來繪製
+       ctx.strokeRect(face1[i].x, face1[i].y, (face1[i].width+10)  , (face1[i].height+10) );
+	   //加上文字
+	   ctx.fillStyle = "rgb(255,0,0)";
+	   ctx.font = (face1[i].width/5) +  "pt Calibri";
+       ctx.fillText("無名氏",face1[i].x  , (face1[i].y-5) );
+     }
+    }
+  } 
+</script>
+
